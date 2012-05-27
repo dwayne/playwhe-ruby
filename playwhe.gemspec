@@ -11,6 +11,9 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{A ruby gem for retrieving Play Whe results.}
   gem.homepage      = "http://rubygems.org/gems/playwhe"
 
+  gem.add_dependency('data_mapper', '~> 1.2.0')
+  gem.add_dependency('dm-sqlite-adapter', '~> 1.2.0')
+
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})

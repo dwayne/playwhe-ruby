@@ -85,11 +85,27 @@ module PlayWhe
     12.times do |m|
       month = m + 1
 
-      callbacks[:before].call(month) if callbacks[:before]
-      result = results_for_month(year, month)
-      callbacks[:after].call(month, result) if callbacks[:after]
+      skip = callbacks[:before] ? callbacks[:before].call(month) : false
 
-      all_results += result
+      unless skip
+        begin
+          flag = :ok
+          results = results_for_month(year, month)
+        rescue ServiceUnavailable
+          flag = :error
+          results = []
+        ensure
+          begin
+            continue = callbacks[:after] ? callbacks[:after].call(month, flag, results) : true
+          rescue
+            raise
+          ensure
+            all_results += results if results
+          end
+        end
+
+        break unless continue
+      end
     end
 
     all_results
@@ -128,3 +144,7 @@ private
     end.sort_by! { |r| r[:draw] }
   end
 end
+
+require 'playwhe/manager'
+require 'playwhe/model'
+require 'playwhe/version'
