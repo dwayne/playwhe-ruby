@@ -45,12 +45,7 @@ module PlayWhe
               Result.transaction do |t|
                 begin
                   results.each do |r|
-                    result = Result.new
-
-                    result.draw   = r[:draw]
-                    result.date   = r[:date]
-                    result.period = r[:period]
-                    result.mark   = r[:mark]
+                    result = Result.first_or_new(draw: r[:draw], date: r[:date], period: r[:period], mark: r[:mark])
 
                     unless result.save
                       DataMapper.logger << "    - invalid data: #{result.draw} #{result.date} #{result.period} #{result.mark}"
