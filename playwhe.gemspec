@@ -4,11 +4,11 @@ require File.expand_path('../lib/playwhe/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Dwayne R. Crooks"]
   gem.email         = ["me@dwaynecrooks.com"]
-  gem.description   = %q{A ruby gem for retrieving Play Whe results.
+  gem.description   = %q{A ruby gem for retrieving and storing Play Whe results.
 
-  The gem provides a ruby API for retrieving Play Whe results from the
-  National Lotteries Control Board (NLCB) website at http://www.nlcb.co.tt/.}
-  gem.summary       = %q{A ruby gem for retrieving Play Whe results.}
+  The gem provides a ruby API for retrieving and storing Play Whe results from
+  the National Lotteries Control Board (NLCB) website at http://www.nlcb.co.tt/.}
+  gem.summary       = %q{A ruby gem for retrieving and storing Play Whe results.}
   gem.homepage      = "http://rubygems.org/gems/playwhe"
 
   gem.add_dependency('data_mapper', '~> 1.2.0')

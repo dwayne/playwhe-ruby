@@ -1,6 +1,8 @@
 require 'date'
 require 'net/http'
 
+require 'playwhe/version'
+
 module PlayWhe
   # The day that Play Whe had its first draw; its start date
   BIRTHDAY = Date.parse('4th July 1994')
@@ -144,7 +146,3 @@ private
     end.sort_by! { |r| r[:draw] }
   end
 end
-
-require 'playwhe/manager'
-require 'playwhe/model'
-require 'playwhe/version'
