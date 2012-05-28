@@ -7,6 +7,11 @@ module PlayWhe
 
   module Storage
 
+    def self.connect(path_to_db, log_level = :debug)
+      DataMapper::Logger.new($stdout, log_level)
+      DataMapper.setup(:default, "sqlite://#{File.expand_path(path_to_db)}")
+    end
+
     def self.create(path = nil, log_level = :debug)
       setup(path, log_level)
 
@@ -103,8 +108,7 @@ module PlayWhe
       path = File.expand_path(path)
       Dir.mkdir(path) unless File.directory?(path)
 
-      DataMapper::Logger.new($stdout, log_level)
-      DataMapper.setup(:default, "sqlite://#{path}/playwhe.db")
+      self.connect("#{path}/playwhe.db", log_level)
     end
   end
 end
