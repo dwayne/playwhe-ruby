@@ -3,14 +3,14 @@ require 'date'
 
 module PlayWhe
 
-  def self.init_db(log_level = :debug)
-    setup_db(log_level)
+  def self.init_db(path = nil, log_level = :debug)
+    setup_db(path, log_level)
 
     DataMapper.auto_migrate!
   end
 
-  def self.update_db(log_level = :debug)
-    setup_db(log_level)
+  def self.update_db(path = nil, log_level = :debug)
+    setup_db(path, log_level)
 
     (BIRTHDAY.year..Date.today.year).each do |year|
       task = Task.first_or_create({ year: year }, { month: 1, status: 'pending' })
@@ -91,8 +91,12 @@ module PlayWhe
 
 private
 
-  def self.setup_db(log_level)
+  def self.setup_db(path, log_level)
+    path ||= File.join(Dir.home, '.playwhe')
+    path = File.expand_path(path)
+    Dir.mkdir(path) unless File.directory?(path)
+
     DataMapper::Logger.new($stdout, log_level)
-    DataMapper.setup(:default, "sqlite://#{File.expand_path('../../../data/playwhe.db', __FILE__)}")
+    DataMapper.setup(:default, "sqlite://#{path}/playwhe.db")
   end
 end
