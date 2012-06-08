@@ -19,6 +19,23 @@ Or install it yourself as:
 
     $ gem install playwhe
 
+## Notes
+
+How to access the library during development?
+
+    $ irb -Ilib --simple-prompt
+    >> require 'playwhe'
+    >> require 'playwhe/storage'
+
+How to update **data/playwhe.db**?
+
+    >> PlayWhe::Storage.update './data'
+
+How to access the data in **data/playwhe.db**?
+
+    >> PlayWhe::Storage.connect './data/playwhe.db'
+    >> PlayWhe::Storage::Result.first # for e.g. retrieve the first result
+
 ## Help
 
 You can get help, report bugs, make suggestions or ask questions by contacting
