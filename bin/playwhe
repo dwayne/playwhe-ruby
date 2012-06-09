@@ -44,25 +44,21 @@ begin
     if match[3].nil?
       # get results for a given month
       begin
-        a = Date.new year, month, 1
+        results = PlayWhe::Storage::Result.all_by_month(year, month).reverse
       rescue
         puts "Sorry, encountered an error. Please check the date you entered."
         exit 1
       end
-      b = (a >> 1) - 1
-
-      results = PlayWhe::Storage::Result.all(:date => a..b, :order => [:draw.desc])
     else
       # get results for a given day
       day = match[3].to_i
 
       begin
-        a = Date.new(year, month, day)
+        results = PlayWhe::Storage::Result.all_by_day(year, month, day).reverse
       rescue
         puts "Sorry, we encountered an error. Please check the date you entered."
         exit 1
       end
-      results = PlayWhe::Storage::Result.all(:date => a, :order => [:draw.desc])
     end
 
     output = results.map do |result|

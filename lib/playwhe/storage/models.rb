@@ -20,6 +20,24 @@ module PlayWhe
       validates_within :period, set: 1..3
       validates_within :mark,   set: PlayWhe::LOWEST_MARK..PlayWhe::HIGHEST_MARK
 
+      def self.all_by_day(year, month, day)
+        self.all(:date => Date.new(year, month, day))
+      end
+
+      def self.all_by_month(year, month)
+        a = Date.new year, month, 1 # start of the month
+        b = (a >> 1) - 1 # end of the month
+
+        self.all(:date => a..b)
+      end
+
+      def self.all_by_year(year)
+        a = Date.new year, 1, 1 # start of the year
+        b = (a >> 12) - 1 # end of the year
+
+        self.all(:date => a..b)
+      end
+
     private
 
       def check_draw
