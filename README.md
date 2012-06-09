@@ -2,8 +2,9 @@
 
 A ruby gem for retrieving and storing Play Whe results.
 
-The gem provides a ruby API for retrieving and storing Play Whe results from the
-National Lotteries Control Board (NLCB) website at http://www.nlcb.co.tt/.
+The gem provides a ruby API and script for retrieving and storing Play Whe
+results from the National Lotteries Control Board (NLCB) website at
+http://www.nlcb.co.tt/.
 
 ## Installation
 
@@ -18,6 +19,40 @@ And then execute:
 Or install it yourself as:
 
     $ gem install playwhe
+
+## Usage
+
+After installation you will have access to both the library and an executable.
+
+To use the library, simply require **playwhe** and you would be able to retrieve
+Play Whe results in your code. If you need a way to persist those results, then
+you can also require **playwhe/storage**.
+
+The executable is called **playwhe** and it allows you to
+
+1. Create and initialize a database for storing Play Whe results.
+
+        $ playwhe --create # or playwhe -c
+
+2. Update a database with the latest Play Whe results.
+
+        $ playwhe --update # or playwhe -u
+
+   Note that you can create and update one after the other with the following
+   command.
+
+        $ playwhe -cu
+
+3. Fetch individual results by month or by day.
+
+        $ echo Fetch results for April, 2012
+        $ playwhe --fetch 2012-04    # or playwhe -f 2012-04
+
+        $ echo Fetch results for 2nd April, 2012
+        $ playwhe --fetch 2012-04-02 # or playwhe -f 2012-04-02
+
+   The fetch is done using a local database of results. So, you must have
+   created and updated your own local database before running this command.
 
 ## Notes
 
@@ -38,5 +73,9 @@ How to access the data in **data/playwhe.db**?
 
 ## Help
 
-You can get help, report bugs, make suggestions or ask questions by contacting
-Dwayne R. Crooks via email at me@dwaynecrooks.com.
+For help using the executable, try
+
+    $ playwhe --help # or playwhe -h
+
+You can also get help, report bugs, make suggestions or ask questions by
+contacting Dwayne R. Crooks via email at me@dwaynecrooks.com.

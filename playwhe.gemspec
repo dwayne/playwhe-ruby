@@ -6,8 +6,9 @@ Gem::Specification.new do |gem|
   gem.email         = ["me@dwaynecrooks.com"]
   gem.description   = %q{A ruby gem for retrieving and storing Play Whe results.
 
-  The gem provides a ruby API for retrieving and storing Play Whe results from
-  the National Lotteries Control Board (NLCB) website at http://www.nlcb.co.tt/.}
+  The gem provides a ruby API and script for retrieving and storing Play Whe
+  results from the National Lotteries Control Board (NLCB) website at
+  http://www.nlcb.co.tt/.}
   gem.summary       = %q{A ruby gem for retrieving and storing Play Whe results.}
   gem.homepage      = "http://rubygems.org/gems/playwhe"
 
