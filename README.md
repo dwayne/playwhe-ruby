@@ -43,20 +43,22 @@ The executable is called **playwhe** and it allows you to
 
         $ playwhe -cu
 
-3. Fetch individual results by month or by day.
+3. Fetch individual results by month
 
         $ echo Fetch results for April, 2012
-        $ playwhe --fetch 2012-04    # or playwhe -f 2012-04
+        $ playwhe --fetch 2012-04 # or playwhe -f 2012-04
+
+   or by day.
 
         $ echo Fetch results for 2nd April, 2012
         $ playwhe --fetch 2012-04-02 # or playwhe -f 2012-04-02
 
-   The fetch is done using a local database of results. So, you must have
-   created and updated your own local database before running this command.
+   Note that the fetch is done using a local database of results. So, you must
+   have created and updated your own local database before running this command.
 
-## Notes
+## Dev Notes
 
-How to access the library during development?
+How to access the library?
 
     $ irb -Ilib --simple-prompt
     >> require 'playwhe'
@@ -66,10 +68,18 @@ How to update **data/playwhe.db**?
 
     >> PlayWhe::Storage.update './data'
 
+How to update **data/playwhe.db** using **bin/playwhe**?
+
+    $ ruby -Ilib ./bin/playwhe -l debug -u ./data
+
 How to access the data in **data/playwhe.db**?
 
     >> PlayWhe::Storage.connect './data/playwhe.db'
     >> PlayWhe::Storage::Result.first # for e.g. retrieve the first result
+
+How to access the data in **data/playwhe.db** using **bin/playwhe**?
+
+    $ ruby -Ilib ./bin/playwhe -f 1994-07-04 ./data
 
 ## Help
 
