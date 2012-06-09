@@ -13,6 +13,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency('data_mapper', '~> 1.2.0')
   gem.add_dependency('dm-sqlite-adapter', '~> 1.2.0')
+  gem.add_dependency('trollop', '~> 1.16.2')
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

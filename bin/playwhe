@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+require 'playwhe'
+require 'playwhe/storage'
+require 'trollop'
+
+DATE_PATTERN = /\A(\d{4})-(\d{2})(?:-(\d{2}))?\z/
+
+opts = Trollop::options do
+  version "playwhe #{PlayWhe::VERSION} (c) 2012 Dwayne R. Crooks"
+  banner <<-EOS
+A ruby script for retrieving and storing Play Whe results.
+
+Usage:
+        playwhe [options] [dir]
+where [options] are:
+EOS
+
+  opt :create, "Create and initialize a database for Play Whe results in the given directory. If no directory is given then $HOME/.playwhe is used"
+  opt :update, "Update the database in the given directory with the latest Play Whe results. If no directory is given then $HOME/.playwhe is used"
+  opt :log_level, "Determines the amount of logging to perform. It must be one of 'fatal', 'error', 'warn', 'info' or 'debug'", :default => 'info'
+  opt :fetch, "Get results for a given month (if format is 'yyyy-mm') or day (if format is 'yyyy-mm-dd'). If a directory is given then the results are retrieved from the database contained within, otherwise it attempts to retrieve the results from the database in $HOME/.playwhe", :type => String
+end
+
+Trollop::die :log_level, "must be one of 'fatal', 'error', 'warn', 'info' or 'debug'" unless %w(fatal error warn info debug).include? opts[:log_level]
+
+if opts[:fetch]
+  match = opts[:fetch].match DATE_PATTERN
+  Trollop::die :fetch, "must be in the format 'yyyy-mm' or 'yyyy-mm-dd'" unless match
+end
+
+begin
+  path = ARGV[0] || File.join(Dir.home, '.playwhe')
+
+  PlayWhe::Storage.create(path, opts[:log_level]) if opts[:create]
+  PlayWhe::Storage.update(path, opts[:log_level]) if opts[:update]
+
+  if opts[:fetch]
+    PlayWhe::Storage.connect(File.join(path, 'playwhe.db'), opts[:log_level])
+
+    year = match[1].to_i
+    month = match[2].to_i
+
+    if match[3].nil?
+      # get results for a given month
+      begin
+        a = Date.new year, month, 1
+      rescue
+        puts "Sorry, encountered an error. Please check the date you entered."
+        exit 1
+      end
+      b = (a >> 1) - 1
+
+      results = PlayWhe::Storage::Result.all(:date => a..b, :order => [:draw.desc])
+    else
+      # get results for a given day
+      day = match[3].to_i
+
+      begin
+        a = Date.new(year, month, day)
+      rescue
+        puts "Sorry, we encountered an error. Please check the date you entered."
+        exit 1
+      end
+      results = PlayWhe::Storage::Result.all(:date => a, :order => [:draw.desc])
+    end
+
+    output = results.map do |result|
+      "Draw  : #{result.draw}\nDate  : #{result.date}\nPeriod: #{result.period}\nMark  : #{result.mark} (#{PlayWhe::SPIRITS[result.mark]})"
+    end.join "\n\n"
+    puts output
+  end
+rescue Interrupt
+  puts "Patience is a virtue. Sorry to see you didn't have any :). Bye!"
+rescue Exception
+  raise
+  puts "Sorry, we encountered an error during processing."
+end
