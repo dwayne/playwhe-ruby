@@ -6,6 +6,17 @@ The gem provides a ruby API and script for retrieving and storing Play Whe
 results from the National Lotteries Control Board (NLCB) website at
 http://www.nlcb.co.tt/.
 
+## Quick Start
+
+    $ gem install playwhe
+    $ playwhe -b && playwhe -u
+
+    $ echo Fetch results for October, 2010
+    $ playwhe -f 2010-10
+
+    $ echo Fetch results for 10 October, 2010
+    $ playwhe -f 2010-10-10
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -30,11 +41,15 @@ you can also require **playwhe/storage**.
 
 The executable is called **playwhe** and it allows you to
 
-1. Create and initialize a database for storing Play Whe results.
+1. Setup a directory with a database of Play Whe results.
+
+        $ playwhe --bootstrap # or playwhe -b
+
+2. Create and initialize a database for storing Play Whe results.
 
         $ playwhe --create # or playwhe -c
 
-2. Update a database with the latest Play Whe results.
+3. Update a database with the latest Play Whe results.
 
         $ playwhe --update # or playwhe -u
 
@@ -43,7 +58,7 @@ The executable is called **playwhe** and it allows you to
 
         $ playwhe -cu
 
-3. Fetch individual results by month
+4. Fetch individual results by month
 
         $ echo Fetch results for April, 2012
         $ playwhe --fetch 2012-04 # or playwhe -f 2012-04
