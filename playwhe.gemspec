@@ -1,25 +1,32 @@
-# -*- encoding: utf-8 -*-
-require File.expand_path('../lib/playwhe/version', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require "playwhe"
 
-Gem::Specification.new do |gem|
-  gem.authors       = ["Dwayne R. Crooks"]
-  gem.email         = ["me@dwaynecrooks.com"]
-  gem.description   = %q{A ruby gem for retrieving and storing Play Whe results.
+Gem::Specification.new do |s|
+  s.author = "Dwayne Crooks"
+  s.email  = "dwayne@playwhesmarter.com"
 
-  The gem provides a ruby API and script for retrieving and storing Play Whe
-  results from the National Lotteries Control Board (NLCB) website at
-  http://www.nlcb.co.tt/.}
-  gem.summary       = %q{A ruby gem for retrieving and storing Play Whe results.}
-  gem.homepage      = "http://rubygems.org/gems/playwhe"
+  s.description = <<-DESCRIPTION.strip.gsub(/\s+/, " ")
+    A Ruby library for retrieving Play Whe results from the
+    National Lotteries Control Board (NLCB) website.
+  DESCRIPTION
 
-  gem.add_dependency('data_mapper', '~> 1.2.0')
-  gem.add_dependency('dm-sqlite-adapter', '~> 1.2.0')
-  gem.add_dependency('trollop', '~> 1.16.2')
+  s.summary  = "Play Whe results should be easy to get"
+  s.homepage = "https://rubygems.org/gems/playwhe"
+  s.license  = "MIT"
 
-  gem.files         = `git ls-files`.split($\)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.name          = "playwhe"
-  gem.require_paths = ["lib"]
-  gem.version       = PlayWhe::VERSION
+  s.executables = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
+  s.files       = `git ls-files`.split("\n")
+  s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
+
+  s.name          = "playwhe"
+  s.require_paths = ["lib"]
+  s.version       = PlayWhe::VERSION
+
+  s.required_ruby_version = ">= 2.0"
+
+  s.add_runtime_dependency "http", "~> 2.0.2"
+
+  s.add_development_dependency "bundler", "~> 1.0"
+  s.add_development_dependency "pry-byebug"
 end
