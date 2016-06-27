@@ -28,5 +28,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "http", "~> 2.0.2"
 
   s.add_development_dependency "bundler", "~> 1.0"
+  s.add_development_dependency "minitest", "~> 5.9"
   s.add_development_dependency "pry-byebug"
+  s.add_development_dependency "rake"
 end
