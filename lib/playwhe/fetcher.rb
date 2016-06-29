@@ -9,7 +9,7 @@ module PlayWhe
       @url = url
     end
 
-    def get(year:, month: 0)
+    def get(year:, month: nil)
       y = normalize_year(year)
       m = normalize_month(month)
 

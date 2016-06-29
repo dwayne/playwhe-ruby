@@ -28,17 +28,10 @@ describe PlayWhe::Util do
       end
     end
 
-    describe "when given 0" do
+    describe "when given nil" do
       it "returns nil" do
-        expect(subject.normalize_month(0)).must_be_nil
+        expect(subject.normalize_month(nil)).must_be_nil
       end
-    end
-  end
-
-  describe "::months_alternation" do
-    it "returns the abbreviated month names separated by |" do
-      expect(subject.months_alternation).must_equal \
-        "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
     end
   end
 end

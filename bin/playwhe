@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+# Usage:
+#
+# bundle exec ruby -Ilib bin/playwhe
+
 require "http"
 require "playwhe"
 
@@ -7,8 +11,6 @@ http = HTTP.timeout(:global, read: 5, write: 5, connect: 5)
 http_adapter = PlayWhe::HTTP::Adapter.new(http)
 url = "http://nlcb.co.tt/app/index.php/pwresults/playwhemonthsum"
 fetcher = PlayWhe::Fetcher.new(http_adapter, url)
-
-parser = PlayWhe::Parser.new
 
 year = 2016
 month = 1
@@ -23,6 +25,9 @@ results =
     exit 1
   end
 
-parser.parse(results, year).each do |result|
-  puts result
+require 'ostruct'
+context = OpenStruct.new(year: year, month: month)
+
+PlayWhe::Parser.parse(results).each do |result|
+  puts result if result.is_valid?(context)
 end

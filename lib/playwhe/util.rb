@@ -8,10 +8,4 @@ module PlayWhe::Util
   def normalize_month(month)
     Date::ABBR_MONTHNAMES[month.to_i]
   end
-
-  def months_alternation
-    months = Date::ABBR_MONTHNAMES.dup
-    months.shift
-    months.join("|")
-  end
 end

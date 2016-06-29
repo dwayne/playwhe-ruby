@@ -1,21 +1,14 @@
 module PlayWhe
-  class Parser
-    include Util
+  module Parser
+    PATTERN = /Draw #: <\/strong>(?<draw>\d+).*?Date: <\/strong>(?<day>\d{1,2})-(?<month>[A-Z]{3})-(?<year>\d{2}).*?Mark Drawn: <\/strong>(?<mark>\d+).*?Drawn at: <\/strong>(?<period>[A-Z]{2})/i
 
-    def parse(html_results, year)
-      y = normalize_year(year)
-
-      pattern = /Draw #: <\/strong>(?<draw>\d+).*?Date: <\/strong>(?<day>\d{1,2})-(?<month>#{months_alternation})-#{y}.*?Mark Drawn: <\/strong>(?<number>\d+).*?Drawn at: <\/strong>(?<period>[A-Z]{2})/i
-
-      html_results.to_enum(:scan, pattern).map do
+    def self.parse(html_results)
+      html_results.to_enum(:scan, PATTERN).map do
         m = $~
+        date = "#{m[:day]}-#{m[:month]}-#{m[:year]}"
 
-        draw = m[:draw].to_i
-        date = "#{m[:day]}-#{m[:month]}-#{y}"
-        number = m[:number].to_i
-        period = m[:period].upcase
-
-        Result.new(draw, date, number, period)
+        Result.new \
+          draw: m[:draw], date: date, mark: m[:mark], period: m[:period]
       end
     end
   end
