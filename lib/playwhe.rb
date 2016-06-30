@@ -78,6 +78,7 @@ module PlayWhe
 end
 
 require "playwhe/version"
+require "playwhe/settings"
 require "playwhe/util"
 require "playwhe/http"
 require "playwhe/fetcher"
