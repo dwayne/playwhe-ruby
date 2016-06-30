@@ -13,6 +13,15 @@ module PlayWhe
       clean
     end
 
+    def ==(other)
+      return true if other.equal?(self)
+      return false unless other.instance_of?(self.class)
+      draw == other.draw &&
+        date == other.date &&
+          mark == other.mark &&
+            period == other.period
+    end
+
     def to_s
       "#{draw},#{date ? date.strftime('%Y-%m-%d') : '-'},#{mark},#{period}"
     end
