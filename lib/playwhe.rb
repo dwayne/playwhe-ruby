@@ -1,8 +1,6 @@
 require "date"
 
 module PlayWhe
-  VERSION = "0.1.0"
-
   # Play Whe's birthday, July 4th, 1994
   BIRTHDAY = Date.new(1994, 7, 4)
 
@@ -79,6 +77,7 @@ module PlayWhe
   end
 end
 
+require "playwhe/version"
 require "playwhe/util"
 require "playwhe/http"
 require "playwhe/fetcher"
