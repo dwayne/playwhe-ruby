@@ -17,7 +17,7 @@ module PlayWhe
       "#{draw},#{date ? date.strftime('%Y-%m-%d') : '-'},#{mark},#{period}"
     end
 
-    def is_valid?(context)
+    def is_valid?(context = nil)
       validate(context)
       no_errors?
     end
@@ -74,7 +74,7 @@ module PlayWhe
     end
 
     def validate_draw
-      add_error(:draw, "must be positive") unless draw >= 1
+      add_error(:draw, "must be a positive integer") unless draw >= 1
     end
 
     def validate_date
@@ -85,11 +85,11 @@ module PlayWhe
           add_error(:date, "must be greater than Play Whe's birthday")
         end
 
-        if context.year && date.year != context.year
+        if context && context.year && date.year != context.year
           add_error(:date, "must be for the correct year (#{context.year})")
         end
 
-        if context.month && date.month != context.month
+        if context && context.month && date.month != context.month
           add_error(:date, "must be for the correct month (#{context.month})")
         end
       end
