@@ -56,6 +56,10 @@ module PlayWhe
     36 => "donkey"
   }
 
+  # The short-hand names for the time of day Play Whe results are drawn,
+  # ordered by earliest to latest
+  PERIODS = %w(EM AM AN PM)
+
   # The times of day, represented as seconds past midnight, that Play Whe
   # results are drawn
   DRAW_TIMES = {
@@ -84,3 +88,4 @@ require "playwhe/http"
 require "playwhe/fetcher"
 require "playwhe/result"
 require "playwhe/parser"
+require "playwhe/get"

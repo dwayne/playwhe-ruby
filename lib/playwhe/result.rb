@@ -111,10 +111,8 @@ module PlayWhe
     end
 
     def validate_period
-      valid_periods = DRAW_TIMES.keys
-
-      unless valid_periods.include?(period)
-        add_error(:period, "must be one of #{valid_periods.join(', ')}")
+      unless PERIODS.include?(period)
+        add_error(:period, "must be one of #{PERIODS.join(', ')}")
       end
     end
   end
