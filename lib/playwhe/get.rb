@@ -56,7 +56,7 @@ module PlayWhe
       sort \
         partition(
           parse(fetcher.get(year: date.year, month: date.month)),
-          validation_context(year, month)
+          validation_context(date.year, date.month)
         ),
         order
     end
@@ -139,7 +139,14 @@ module PlayWhe
     end
 
     def sort_asc(results)
-      results.sort_by { |r| [r.date, PERIODS.index(r.period)] }
+      default_date = Date.today
+      default_period_index = PERIODS.length
+      results.sort_by do |r|
+        [
+          r.date || default_date,
+          PERIODS.index(r.period) || default_period_index
+        ]
+      end
     end
 
     def sort_desc(results)
