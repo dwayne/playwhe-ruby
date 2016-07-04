@@ -1,88 +1,113 @@
 #!/usr/bin/env ruby
 
-require 'playwhe'
-require 'playwhe/storage'
-require 'trollop'
+require "optparse"
 
-DATE_PATTERN = /\A(\d{4})-(\d{2})(?:-(\d{2}))?\z/
+require_relative "../lib/playwhe"
 
-opts = Trollop::options do
-  version "playwhe #{PlayWhe::VERSION} (c) 2012 Dwayne R. Crooks"
-  banner <<-EOS
-A ruby script for retrieving and storing Play Whe results.
+options = {}
 
-Usage:
-        playwhe [options] [dir]
-where [options] are:
-EOS
+option_parser = OptionParser.new do |opts|
+  executable_name = File.basename($PROGRAM_NAME)
+  opts.banner = <<-BANNER
+Display Play Whe results
 
-  opt :bootstrap, "Setup a given directory with a database of Play Whe results. If no directory is given then $HOME/.playwhe is used"
-  opt :create, "Create and initialize a database for Play Whe results in the given directory. If no directory is given then $HOME/.playwhe is used"
-  opt :update, "Update the database in the given directory with the latest Play Whe results. If no directory is given then $HOME/.playwhe is used"
-  opt :log_level, "Determines the amount of logging to perform. It must be one of 'fatal', 'error', 'warn', 'info' or 'debug'", :default => 'info'
-  opt :fetch, "Get results for a given month (if format is 'yyyy-mm') or day (if format is 'yyyy-mm-dd'). If a directory is given then the results are retrieved from the database contained within, otherwise it attempts to retrieve the results from the database in $HOME/.playwhe", :type => String
-end
+Usage: #{executable_name} [args] [options]
 
-Trollop::die :log_level, "must be one of 'fatal', 'error', 'warn', 'info' or 'debug'" unless %w(fatal error warn info debug).include? opts[:log_level]
+Arguments:
+\t<year>
+\t<year> <month>
+\t<year> <month> <day>
 
-if opts[:fetch]
-  match = opts[:fetch].match DATE_PATTERN
-  Trollop::die :fetch, "must be in the format 'yyyy-mm' or 'yyyy-mm-dd'" unless match
+Options:
+  BANNER
+
+  opts.on("--most-recent N", Integer, "List the N (>= 1) most recent results") do |n|
+    if n >= 1
+      options[:most_recent] = n
+    else
+      raise ArgumentError, "invalid argument: --most-recent #{n}"
+    end
+  end
+
+  opts.on("--least-recent N", Integer, "List the N (>= 1) least recent results") do |n|
+    if n >= 1
+      options[:least_recent] = n
+    else
+      raise ArgumentError, "invalid argument: --least-recent #{n}"
+    end
+  end
+
+  opts.on("--order asc|desc", %i(asc desc), "List in ascending or descending order") do |order|
+    options[:order] = order
+  end
+
+  opts.on("-v", "--version", "Show version information, then exit") do
+    puts PlayWhe::VERSION
+    exit
+  end
+
+  opts.on("-h", "--help", "Show this help, then exit") do
+    puts opts
+    exit
+  end
 end
 
 begin
-  path = ARGV[0] || File.join(Dir.home, '.playwhe')
+  option_parser.parse!
+rescue => e
+  STDERR.puts "Please check your options/arguments"
+  STDERR.puts "Error: #{e.message}"
+  exit 1
+end
 
-  if opts[:bootstrap]
-    spec = Gem::Specification.find_by_name('playwhe')
-    data = File.join(spec.gem_dir, 'data/playwhe.db')
+def as_csv(results)
+  results.map(&:to_s).join("\n")
+end
 
-    if File.file? path
-      puts "Sorry, file '#{path}' exists. We could not complete the operation."
+def get_results(args, options)
+  if options.key?(:most_recent)
+    PlayWhe.get.most_recent(limit: options[:most_recent], order: options.fetch(:order, :desc))
+  elsif options.key?(:least_recent)
+    PlayWhe.get.least_recent(limit: options[:least_recent], order: options.fetch(:order, :asc))
+  elsif args.any?
+    nargs = args.length
+    order = options.fetch(:order, :asc)
+
+    if nargs == 1
+      year = args[0].to_i
+      PlayWhe.get.results_for_year(Date.new(year), order: order)
+    elsif nargs == 2
+      year = args[0].to_i
+      month = args[1].to_i
+      PlayWhe.get.results_for_month(Date.new(year, month), order: order)
+    elsif nargs == 3
+      year = args[0].to_i
+      month = args[1].to_i
+      day = args[2].to_i
+      PlayWhe.get.results_for_day(Date.new(year, month, day), order: order)
     else
-      Dir.mkdir(path) unless File.directory?(path)
-      FileUtils.cp(data, path, :verbose => true)
-
-      puts "You're all setup now. Have fun!"
+      raise ArgumentError, "Too many arguments"
     end
   else
-    PlayWhe::Storage.create(path, opts[:log_level]) if opts[:create]
-    PlayWhe::Storage.update(path, opts[:log_level]) if opts[:update]
-
-    if opts[:fetch]
-      PlayWhe::Storage.connect(File.join(path, 'playwhe.db'), opts[:log_level])
-
-      year = match[1].to_i
-      month = match[2].to_i
-
-      if match[3].nil?
-        # get results for a given month
-        begin
-          results = PlayWhe::Storage::Result.all_by_month(year, month).reverse
-        rescue
-          puts "Sorry, we encountered an error. Please check the date you entered."
-          exit 1
-        end
-      else
-        # get results for a given day
-        day = match[3].to_i
-
-        begin
-          results = PlayWhe::Storage::Result.all_by_day(year, month, day).reverse
-        rescue
-          puts "Sorry, we encountered an error. Please check the date you entered."
-          exit 1
-        end
-      end
-
-      output = results.map do |result|
-        "Draw  : #{result.draw}\nDate  : #{result.date}\nPeriod: #{result.period}\nMark  : #{result.mark} (#{PlayWhe::SPIRITS[result.mark]})"
-      end.join "\n\n"
-      puts output
-    end
+    PlayWhe.get.most_recent(limit: 4, order: options.fetch(:order, :desc))
   end
-rescue Interrupt
-  puts "Patience is a virtue. Sorry to see you didn't have any :). Bye!"
-rescue
-  puts "Sorry, we encountered an error during processing."
 end
+
+def main(args, options)
+  good_results, bad_results = get_results(args, options)
+  puts as_csv(good_results) if good_results.any?
+rescue PlayWhe::Error => e
+  STDERR.puts "Sorry, we were unable to retrieve the results"
+  STDERR.puts "Error: #{e.message}"
+  exit 1
+rescue ArgumentError => e
+  STDERR.puts "Please check your options/arguments"
+  STDERR.puts "Error: #{e.message}"
+  exit 1
+rescue => e
+  STDERR.puts "Sorry, we encountered an unknown error"
+  STDERR.puts "Error: #{e.message}"
+  exit 1
+end
+
+main(ARGV, options)

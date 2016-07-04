@@ -1,106 +1,115 @@
-# Play Whe
+## About
 
-A ruby gem for retrieving and storing Play Whe results.
-
-The gem provides a ruby API and script for retrieving and storing Play Whe
-results from the National Lotteries Control Board (NLCB) website at
-http://www.nlcb.co.tt/.
-
-## Quick Start
-
-    $ gem install playwhe
-    $ playwhe -b && playwhe -u
-
-    $ echo Fetch results for October, 2010
-    $ playwhe -f 2010-10
-
-    $ echo Fetch results for 10 October, 2010
-    $ playwhe -f 2010-10-10
+playwhe is a Ruby library for retrieving Play Whe results from the [National Lotteries
+Control Board](http://www.nlcb.co.tt/) (NLCB) website.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'playwhe'
+```ruby
+gem "playwhe"
+```
 
 And then execute:
 
-    $ bundle
+```bash
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install playwhe
+```bash
+$ gem install playwhe
+```
+
+Inside of your Ruby program do:
+
+```ruby
+require "playwhe"
+```
+
+... to pull it in as a dependency.
 
 ## Usage
 
-After installation you will have access to both the library and an executable.
+This gem comes with a CLI called `playwhe`. Below are some examples of its usage.
 
-To use the library, simply require **playwhe** and you would be able to retrieve
-Play Whe results in your code. If you need a way to persist those results, then
-you can also require **playwhe/storage**.
+List the 4 most recent results in descending order:
 
-The executable is called **playwhe** and it allows you to
+```bash
+$ playwhe
+# or
+$ playwhe --most-recent 4
+# or
+$ playwhe --most-recent --order desc
+15253,2016-07-02,29,PM
+15252,2016-07-02,30,AN
+15251,2016-07-02,31,AM
+15250,2016-07-02,29,EM
+```
 
-1. Setup a directory with a database of Play Whe results.
+List the 4 most recent results in ascending order:
 
-        $ playwhe --bootstrap # or playwhe -b
+```bash
+$ playwhe --order asc
+15250,2016-07-02,29,EM
+15251,2016-07-02,31,AM
+15252,2016-07-02,30,AN
+15253,2016-07-02,29,PM
+```
 
-2. Create and initialize a database for storing Play Whe results.
+List the 8 least recent results in ascending order:
 
-        $ playwhe --create # or playwhe -c
+```bash
+$ playwhe --least-recent 8
+1,1994-07-04,15,AM
+2,1994-07-04,11,PM
+3,1994-07-05,36,AM
+4,1994-07-05,31,PM
+5,1994-07-06,12,AM
+6,1994-07-06,36,PM
+7,1994-07-07,6,AM
+8,1994-07-07,23,PM
+```
 
-3. Update a database with the latest Play Whe results.
+List all the results for the year 2015 in ascending order:
 
-        $ playwhe --update # or playwhe -u
+```bash
+$ playwhe 2015
+13562,2015-01-01,29,EM
+13563,2015-01-01,29,AM
+13564,2015-01-01,1,PM
+...
+14630,2015-12-31,15,EM
+14631,2015-12-31,13,AM
+14632,2015-12-31,28,AN
+14633,2015-12-31,27,PM
+```
 
-   Note that you can create and update one after the other with the following
-   command.
+List all the results for April 2016 in descending order:
 
-        $ playwhe -cu
+```bash
+$ playwhe 2016 4 --order desc
+15041,2016-04-30,3,PM
+15040,2016-04-30,6,AN
+15039,2016-04-30,31,AM
+15038,2016-04-30,27,EM
+...
+14941,2016-04-01,3,PM
+14940,2016-04-01,16,AN
+14939,2016-04-01,14,AM
+14938,2016-04-01,31,EM
+```
 
-4. Fetch individual results by month
+List all the results for October 10th, 2008 in ascending order:
 
-        $ echo Fetch results for April, 2012
-        $ playwhe --fetch 2012-04 # or playwhe -f 2012-04
+```bash
+$ playwhe 2008 10 10
+8775,2008-10-10,31,AM
+8776,2008-10-10,12,PM
+```
 
-   or by day.
+## Copyright
 
-        $ echo Fetch results for 2nd April, 2012
-        $ playwhe --fetch 2012-04-02 # or playwhe -f 2012-04-02
-
-   Note that the fetch is done using a local database of results. So, you must
-   have created and updated your own local database before running this command.
-
-## Dev Notes
-
-How to access the library?
-
-    $ irb -Ilib --simple-prompt
-    >> require 'playwhe'
-    >> require 'playwhe/storage'
-
-How to update **data/playwhe.db**?
-
-    >> PlayWhe::Storage.update './data'
-
-How to update **data/playwhe.db** using **bin/playwhe**?
-
-    $ ruby -Ilib ./bin/playwhe -l debug -u ./data
-
-How to access the data in **data/playwhe.db**?
-
-    >> PlayWhe::Storage.connect './data/playwhe.db'
-    >> PlayWhe::Storage::Result.first # for e.g. retrieve the first result
-
-How to access the data in **data/playwhe.db** using **bin/playwhe**?
-
-    $ ruby -Ilib ./bin/playwhe -f 1994-07-04 ./data
-
-## Help
-
-For help using the executable, try
-
-    $ playwhe --help # or playwhe -h
-
-You can also get help, report bugs, make suggestions or ask questions by
-contacting Dwayne R. Crooks via email at me@dwaynecrooks.com.
+Copyright (c) 2016 Dwayne Crooks. See [LICENSE](/LICENSE) for further details.
