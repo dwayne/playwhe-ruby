@@ -63,10 +63,10 @@ module PlayWhe
   # The times of day, represented as seconds past midnight, that Play Whe
   # results are drawn
   DRAW_TIMES = {
-    'EM' => 10 * 3600,       # 10:00 AM
-    'AM' => 13 * 3600,       #  1:00 PM
-    'AN' => 16 * 3600,       #  4:00 PM
-    'PM' => 18 * 3600 + 1800 #  6:30 PM
+    "EM" => 10 * 3600,       # 10:00 AM
+    "AM" => 13 * 3600,       #  1:00 PM
+    "AN" => 16 * 3600,       #  4:00 PM
+    "PM" => 18 * 3600 + 1800 #  6:30 PM
   }
 
   class Error < StandardError; end
@@ -81,11 +81,11 @@ module PlayWhe
   end
 end
 
-require "playwhe/version"
-require "playwhe/settings"
-require "playwhe/util"
-require "playwhe/http"
-require "playwhe/fetcher"
-require "playwhe/result"
-require "playwhe/parser"
-require "playwhe/get"
+require_relative "playwhe/version"
+require_relative "playwhe/settings"
+require_relative "playwhe/util"
+require_relative "playwhe/http"
+require_relative "playwhe/fetcher"
+require_relative "playwhe/result"
+require_relative "playwhe/parser"
+require_relative "playwhe/get"

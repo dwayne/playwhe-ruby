@@ -1,4 +1,4 @@
-require 'http'
+require "http"
 
 module PlayWhe
   module HTTP

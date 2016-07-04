@@ -6,7 +6,7 @@ describe PlayWhe::HTTP::Response do
   let(:response) do
     response = OpenStruct.new(status: 200)
     def response.to_s
-      'A body'
+      "A body"
     end
     response
   end

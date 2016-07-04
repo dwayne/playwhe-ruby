@@ -1,39 +1,113 @@
 #!/usr/bin/env ruby
 
-# Usage:
-#
-# bundle exec ruby -Ilib bin/playwhe
+require "optparse"
 
-require "http"
-require "playwhe"
+require_relative "../lib/playwhe"
 
-settings = PlayWhe::Settings.config
+options = {}
 
-http = HTTP.timeout \
-  :global,
-  read: settings.http.read_timeout,
-  write: settings.http.write_timeout,
-  connect: settings.http.connect_timeout
+option_parser = OptionParser.new do |opts|
+  executable_name = File.basename($PROGRAM_NAME)
+  opts.banner = <<-BANNER
+Display Play Whe results
 
-http_adapter = PlayWhe::HTTP::Adapter.new(http)
-fetcher = PlayWhe::Fetcher.new(http_adapter, settings.url)
+Usage: #{executable_name} [args] [options]
 
-year = 2016
-month = 1
+Arguments:
+\t<year>
+\t<year> <month>
+\t<year> <month> <day>
 
-results =
-  begin
-    fetcher.get(year: year, month: month)
-  rescue PlayWhe::NetworkError => e
-    $stderr.puts "Sorry, we encountered an unrecoverable error"
-    $stderr.puts e.message
-    $stderr.puts e.backtrace.join("\n")
-    exit 1
+Options:
+  BANNER
+
+  opts.on("--most-recent N", Integer, "List the N (>= 1) most recent results") do |n|
+    if n >= 1
+      options[:most_recent] = n
+    else
+      raise ArgumentError, "invalid argument: --most-recent #{n}"
+    end
   end
 
-require 'ostruct'
-context = OpenStruct.new(year: year, month: month)
+  opts.on("--least-recent N", Integer, "List the N (>= 1) least recent results") do |n|
+    if n >= 1
+      options[:least_recent] = n
+    else
+      raise ArgumentError, "invalid argument: --least-recent #{n}"
+    end
+  end
 
-PlayWhe::Parser.parse(results).each do |result|
-  puts result if result.is_valid?(context)
+  opts.on("--order asc|desc", %i(asc desc), "List in ascending or descending order") do |order|
+    options[:order] = order
+  end
+
+  opts.on("-v", "--version", "Show version information, then exit") do
+    puts PlayWhe::VERSION
+    exit
+  end
+
+  opts.on("-h", "--help", "Show this help, then exit") do
+    puts opts
+    exit
+  end
 end
+
+begin
+  option_parser.parse!
+rescue => e
+  STDERR.puts "Please check your options/arguments"
+  STDERR.puts "Error: #{e.message}"
+  exit 1
+end
+
+def as_csv(results)
+  results.map(&:to_s).join("\n")
+end
+
+def get_results(args, options)
+  if options.key?(:most_recent)
+    PlayWhe.get.most_recent(limit: options[:most_recent], order: options.fetch(:order, :desc))
+  elsif options.key?(:least_recent)
+    PlayWhe.get.least_recent(limit: options[:least_recent], order: options.fetch(:order, :asc))
+  elsif args.any?
+    nargs = args.length
+    order = options.fetch(:order, :asc)
+
+    if nargs == 1
+      year = args[0].to_i
+      PlayWhe.get.results_for_year(Date.new(year), order: order)
+    elsif nargs == 2
+      year = args[0].to_i
+      month = args[1].to_i
+      PlayWhe.get.results_for_month(Date.new(year, month), order: order)
+    elsif nargs == 3
+      year = args[0].to_i
+      month = args[1].to_i
+      day = args[2].to_i
+      PlayWhe.get.results_for_day(Date.new(year, month, day), order: order)
+    else
+      raise ArgumentError, "Too many arguments"
+    end
+  else
+    PlayWhe.get.most_recent(limit: 4, order: options.fetch(:order, :desc))
+  end
+end
+
+def main(args, options)
+  good_results, bad_results = get_results(args, options)
+  puts as_csv(good_results) if good_results.any?
+rescue PlayWhe::Error => e
+  STDERR.puts "Sorry, we were unable to retrieve the results"
+  STDERR.puts "Error: #{e.message}"
+  exit 1
+rescue ArgumentError => e
+  STDERR.puts "Please check your options/arguments"
+  STDERR.puts "Error: #{e.message}"
+  exit 1
+rescue => e
+  STDERR.puts "Sorry, we encountered an unknown error"
+  STDERR.puts "Error: #{e.message}"
+  exit 1
+end
+
+main(ARGV, options)
